@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment variables — NUNCA subir esto a GitHub
+.env
+.env.local
+.env.production
+
+# Build outputs
+dist/
+build/
+
+# Expo
+mobile/.expo/
+mobile/android/
+mobile/ios/
+
+# NestJS
+backend/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
