@@ -1,0 +1,86 @@
+# .github/workflows/ci.yml
+name: CI — ChePrecio
+
+# Cuándo se ejecuta este pipeline
+on:
+  push:
+    branches: ['**']        # en cualquier push a cualquier rama
+  pull_request:
+    branches: [main]        # en cualquier PR hacia main
+
+jobs:
+  # ─────────────────────────────────────────
+  # JOB 1: Backend
+  # ─────────────────────────────────────────
+  backend:
+    name: Backend (NestJS)
+    runs-on: ubuntu-latest  # la máquina virtual donde corre el pipeline
+
+    # Variables de entorno disponibles en todos los steps de este job
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+      NODE_ENV: test
+      PORT: 3000
+
+    steps:
+      # 1. Descarga el código del repo
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      # 2. Instala Node 20 (igual que en tu máquina)
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'              # cachea node_modules entre runs
+          cache-dependency-path: backend/package-lock.json
+
+      # 3. Instala dependencias (equivale a npm install)
+      - name: Instalar dependencias
+        working-directory: backend  # todos los comandos corren desde /backend
+        run: npm ci                 # ci es más estricto que install, ideal para pipelines
+
+      # 4. Verifica que el código cumple las reglas de estilo
+      - name: Lint
+        working-directory: backend
+        run: npm run lint
+
+      # 5. Verifica que TypeScript compila sin errores
+      - name: Build
+        working-directory: backend
+        run: npm run build
+
+      # 6. Corre los tests
+      - name: Tests
+        working-directory: backend
+        run: npm run test
+
+  # ─────────────────────────────────────────
+  # JOB 2: Mobile (typecheck)
+  # ─────────────────────────────────────────
+  mobile:
+    name: Mobile (Expo)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Instalar dependencias
+        working-directory: mobile
+        run: npm ci
+
+      # Verifica que TypeScript no tiene errores en la app
+      - name: TypeScript check
+        working-directory: mobile
+        run: npx tsc --noEmit
