@@ -10,6 +10,8 @@ import { User } from './entities/user.entity';
 import { Product } from './entities/product.entity';
 import { Scan } from './entities/scan.entity';
 import { SepaPrice } from './entities/sepa-price.entity';
+import { AuthModule } from './auth/auth.module';
+
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { SepaPrice } from './entities/sepa-price.entity';
         migrations: [__dirname + '/migrations/*{.ts,.js}'],
       }),
     }),
+
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
