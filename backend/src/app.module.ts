@@ -12,7 +12,6 @@ import { Scan } from './entities/scan.entity';
 import { SepaPrice } from './entities/sepa-price.entity';
 import { AuthModule } from './auth/auth.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

@@ -5,35 +5,39 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import * as jwksRsa from 'jwks-rsa';
 import { AppConfigService } from '../config/app.config';
 
-// Esta clase le dice a Passport CÓMO validar el JWT
+// Tiparlo elimina los "Unsafe member access on an `any` value"
+interface SupabaseJwtPayload {
+  sub: string;
+  email: string;
+  role: string;
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(config: AppConfigService) {
     super({
-      // De dónde saca el token: del header "Authorization: Bearer <token>"
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-
-      // No expira nunca de nuestro lado — dejamos que Supabase maneje la expiración
       ignoreExpiration: false,
-
-      // En vez de una clave fija, usamos JWKS — Supabase rota sus claves
-      // y esto las obtiene dinámicamente
       secretOrKeyProvider: jwksRsa.passportJwtSecret({
-        cache: true,           // cachea la clave, no la pide en cada request
-        rateLimit: true,       // evita pedir la clave demasiado seguido
+        cache: true,
+        rateLimit: true,
         jwksRequestsPerMinute: 5,
         jwksUri: `${config.supabaseUrl}/auth/v1/.well-known/jwks.json`,
       }),
-
-      algorithms: ['ES256'],   // algoritmo que usa Supabase
+      algorithms: ['ES256'],
     });
   }
 
-  // Este método corre DESPUÉS de validar la firma del JWT
-  // Lo que retornás acá queda disponible como request.user
-  async validate(payload: any) {
+  // Tipamos el parámetro como SupabaseJwtPayload en vez de any
+  // y marcamos el método async sin await con Promise<...> explícito,
+  // eso resuelve el warning de "Async method has no await expression"
+  validate(payload: SupabaseJwtPayload): {
+    id: string;
+    email: string;
+    role: string;
+  } {
     return {
-      id: payload.sub,           // el user.id de Supabase
+      id: payload.sub,
       email: payload.email,
       role: payload.role,
     };

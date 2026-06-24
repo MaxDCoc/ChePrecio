@@ -11,9 +11,9 @@ async function bootstrap() {
   // Valida automáticamente los DTOs en todos los endpoints
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,       // elimina campos que no están en el DTO
+      whitelist: true, // elimina campos que no están en el DTO
       forbidNonWhitelisted: true, // error si llegan campos extra
-      transform: true,       // convierte strings a números automáticamente
+      transform: true, // convierte strings a números automáticamente
     }),
   );
 
@@ -22,7 +22,10 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
-  console.log(`🚀 ChePrecio backend corriendo en http://localhost:${port}/api`);
+  console.log(`ChePrecio backend corriendo en http://localhost:${port}/api`);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('Error fatal al arrancar la app:', error);
+  process.exit(1);
+});
