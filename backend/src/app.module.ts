@@ -13,7 +13,6 @@ import { SepaPrice } from './entities/sepa-price.entity';
 import { AuthModule } from './auth/auth.module';
 import { SupabaseModule } from './supabase/supabase.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

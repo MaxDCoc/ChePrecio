@@ -6,7 +6,12 @@ import { randomUUID } from 'crypto';
 import { AppConfigService } from '../config/app.config';
 
 const BUCKET_NAME = 'product-photos';
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+];
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 @Injectable()
@@ -30,8 +35,7 @@ export class StorageService {
           },
         },
         realtime: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          transport: WebSocket as any, // requerido en Node < 22
+          transport: WebSocket as unknown as never,
         },
       },
     );
