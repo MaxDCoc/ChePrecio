@@ -12,6 +12,7 @@ import { Scan } from './entities/scan.entity';
 import { SepaPrice } from './entities/sepa-price.entity';
 import { AuthModule } from './auth/auth.module';
 import { SupabaseModule } from './supabase/supabase.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { SupabaseModule } from './supabase/supabase.module';
 
     AuthModule,
     SupabaseModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

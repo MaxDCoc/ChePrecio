@@ -12,14 +12,15 @@ import { AppService } from './app.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { CurrentUser } from './auth/current-user.decorator';
 import type { CurrentUserPayload } from './auth/current-user.decorator';
-import { AccessToken } from './auth/access-token.decorator';
 import { StorageService } from './supabase/storage.service';
+import { VisionService } from './ai/vision.service';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly storageService: StorageService,
+    private readonly visionService: VisionService,
   ) {}
 
   @Get()
@@ -30,7 +31,7 @@ export class AppController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   getProfile(@CurrentUser() user: CurrentUserPayload) {
-    return { message: 'JWT válido', user };
+    return { message: 'Tu JWT es válido', user };
   }
 
   @Post('test-upload')
@@ -39,13 +40,29 @@ export class AppController {
   async testUpload(
     @UploadedFile() file: Express.Multer.File,
     @CurrentUser() user: CurrentUserPayload,
-    @AccessToken() accessToken: string,
   ) {
+    // Necesitamos pasar un token de acceso real para subir a Storage
+    // Por ahora usamos un placeholder — lo resolvemos bien en el paso de Scans
     const url = await this.storageService.uploadProductPhoto(
       file,
       user.id,
-      accessToken,
+      'placeholder-token',
     );
     return { message: 'Foto subida con éxito', url };
+  }
+
+  // Endpoint temporal de prueba — se va a mover al ScansModule
+  @Post('test-vision')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  async testVision(@UploadedFile() file: Express.Multer.File) {
+    const reading = await this.visionService.readLabel(
+      file.buffer,
+      file.mimetype,
+    );
+    return {
+      message: 'Análisis completado',
+      reading,
+    };
   }
 }
