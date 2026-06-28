@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { Server } from 'http';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -25,7 +26,7 @@ describe('AppController (e2e)', () => {
 
   describe('GET /api', () => {
     it('debería responder Hello World', () => {
-      return request(app.getHttpServer())
+      return request(app.getHttpServer() as Server)
         .get('/api')
         .expect(200)
         .expect('Hello World!');
@@ -34,11 +35,13 @@ describe('AppController (e2e)', () => {
 
   describe('GET /api/me', () => {
     it('debería responder 401 sin token de autenticación', () => {
-      return request(app.getHttpServer()).get('/api/me').expect(401);
+      return request(app.getHttpServer() as Server)
+        .get('/api/me')
+        .expect(401);
     });
 
     it('debería responder 401 con un token inválido', () => {
-      return request(app.getHttpServer())
+      return request(app.getHttpServer() as Server)
         .get('/api/me')
         .set('Authorization', 'Bearer token-invalido-falso')
         .expect(401);
@@ -59,13 +62,14 @@ describe('AppController (e2e)', () => {
         return;
       }
 
-      return request(app.getHttpServer())
+      return request(app.getHttpServer() as Server)
         .get('/api/me')
         .set('Authorization', `Bearer ${validToken}`)
         .expect(200)
         .expect((res) => {
-          expect(res.body.user).toHaveProperty('id');
-          expect(res.body.user).toHaveProperty('email');
+          const body = res.body as { user: { id: string; email: string } };
+          expect(body.user).toHaveProperty('id');
+          expect(body.user).toHaveProperty('email');
         });
     });
   });

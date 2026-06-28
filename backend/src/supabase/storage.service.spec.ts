@@ -23,7 +23,7 @@ function createMockFile(
     destination: '',
     filename: '',
     path: '',
-    stream: null as any,
+    stream: null as unknown as Express.Multer.File['stream'], // Esto es solo para cumplir con la interfaz, no se usa en los tests
     ...overrides,
   };
 }
@@ -52,7 +52,11 @@ describe('StorageService', () => {
   describe('uploadProductPhoto — validaciones', () => {
     it('debería rechazar un archivo undefined', async () => {
       await expect(
-        service.uploadProductPhoto(undefined as any, 'user-123', 'fake-token'),
+        service.uploadProductPhoto(
+          undefined as unknown as Express.Multer.File['stream'],
+          'user-123',
+          'fake-token',
+        ),
       ).rejects.toThrow(BadRequestException);
     });
 
