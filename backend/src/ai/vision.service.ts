@@ -42,7 +42,10 @@ export class VisionService {
     });
   }
 
-  async readLabel(imageBuffer: Buffer, mimeType: string): Promise<LabelReading> {
+  async readLabel(
+    imageBuffer: Buffer,
+    mimeType: string,
+  ): Promise<LabelReading> {
     const base64Image = imageBuffer.toString('base64');
 
     try {
@@ -135,11 +138,9 @@ export class VisionService {
     const obj = data as Record<string, unknown>;
 
     return {
-      productName:
-        typeof obj.productName === 'string' ? obj.productName : null,
+      productName: typeof obj.productName === 'string' ? obj.productName : null,
       brand: typeof obj.brand === 'string' ? obj.brand : null,
-      priceCents:
-        typeof obj.priceCents === 'number' ? obj.priceCents : null,
+      priceCents: typeof obj.priceCents === 'number' ? obj.priceCents : null,
       confidence:
         typeof obj.confidence === 'number'
           ? Math.max(0, Math.min(1, obj.confidence)) // clamp entre 0 y 1
