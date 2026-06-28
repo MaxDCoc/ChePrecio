@@ -58,6 +58,12 @@ jobs:
         working-directory: backend
         run: npm run test
 
+      # 7. Corre los tests end-to-end (sin el test de token válido,
+      # que se salta automáticamente si no hay TEST_USER_JWT)
+      - name: Tests E2E
+        working-directory: backend
+        run: npm run test:e2e
+
   # ─────────────────────────────────────────
   # JOB 2: Mobile (typecheck)
   # ─────────────────────────────────────────
